@@ -6,11 +6,11 @@ L'objectif est de visualiser comment la **localisation par distance** (mesure de
 
 ```mermaid
 graph TD
-    A[Station 1<br>(Lat: 48.8584, Lon: 2.2945)] --> Rayon: 10 km| B(Cercle 1)
-    C[Station 2<br>(Lat: 48.8601, Lon: 2.3012)] -->|Rayon: 8 km| D(Cercle 2)
-    E[Station 3<br>(Lat: 48.8550, Lon: 2.2890)] -->|Rayon: 12 km| F(Cercle 3)
+    A["Station 1 (Lat: 48.8584, Lon: 2.2945)"] --> Rayon: 10 km| B(Cercle 1)
+    C["Station 2 (Lat: 48.8601, Lon: 2.3012)"] -->|Rayon: 8 km| D(Cercle 2)
+    E["Station 3 (Lat: 48.8550, Lon: 2.2890)"] -->|Rayon: 12 km| F(Cercle 3)
 
-    B & D & F --> G[Zone d'intersection<br>📍 Position estimée]
+    B & D & F --> G["Zone d'intersection (Position estimée)"]
 
     style A fill:#f9f,stroke:#333
     style C fill:#f9f,stroke:#333
