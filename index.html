@@ -3,397 +3,327 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trilatération - Carte des Stations</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <title>SNT - Trilatération</title>
+
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Leaflet MarkerCluster CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+  <!-- PapaParse pour lire facilement le fichier CSV -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  <!-- FontAwesome pour le logo Pin -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
   <style>
-    #map { height: calc(100vh - 100px); width: 100%; }
-    body, html { margin: 0; padding: 0; height: 100%; }
-    .delete-btn {
-      background: #ef4444;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      padding: 4px 8px;
-      cursor: pointer;
-      margin-top: 8px;
-      font-size: 12px;
-    }
-    .delete-btn:hover { background: #dc2626; }
-    .pin-btn {
-      background: #ef4444;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      transition: background 0.2s;
-    }
-    .pin-btn:disabled {
-      background: #9ca3af;
-      cursor: not-allowed;
-    }
-    .pin-btn:hover:not(:disabled) { background: #dc2626; }
-    .custom-pin {
-      background: #ef4444;
-      border-radius: 50% 50% 50% 0;
-      transform: rotate(-45deg);
-      width: 24px;
-      height: 24px;
-      border: 2px solid white;
-      box-shadow: 0 0 5px rgba(0,0,0,0.5);
-    }
+    /* Ajustement plein écran */
+    html, body { height: 100%; margin: 0; padding: 0; }
+    #map { height: calc(100vh - 64px); width: 100%; }
+    /* Curseur spécial en mode Pin */
+    body.pin-mode #map { cursor: crosshair !important; }
   </style>
 </head>
-<body>
-  <div class="bg-white p-4 shadow-md">
-    <div class="flex justify-between items-center">
-      <h1 class="text-xl font-bold text-gray-800">Trilatération - Stations</h1>
-      <form id="form" class="flex items-center gap-2">
-        <div class="flex flex-col gap-1 items-center">
-          <div class="flex gap-1">
-            <input
-              type="text"
-              id="stationInput"
-              placeholder="ID Station"
-              class="px-3 py-2 border border-gray-300 rounded-md text-sm w-48"
-            />
-            <input
-              type="number"
-              id="distanceInput"
-              placeholder="Rayon (m)"
-              min="1"
-              step="1"
-              class="px-3 py-2 border border-gray-300 rounded-md text-sm w-48"
-            />
-          </div>
-          <div class="flex gap-1">
-            <button
-              type="button"
-              id="addButton"
-              class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium"
-            >
-              Ajouter
-            </button>
-            <button
-              type="submit"
-              class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium"
-            >
-              Valider
-            </button>
-            <button
-              type="button"
-              id="pinButton"
-              class="pin-btn"
-              title="Poser une épingle"
-            >
-              📌
-            </button>
-          </div>
-        </div>
-      </form>
+<body class="bg-gray-100 flex flex-col font-sans">
+
+  <!-- Menu Supérieur -->
+  <header class="h-16 bg-slate-900 text-white flex items-center justify-between px-6 shadow-md z-20">
+    
+    <!-- Zone Gauche -->
+    <div class="flex items-center space-x-6">
+      <h1 class="text-xl font-bold tracking-wide text-sky-400">SNT - Trilatération</h1>
+      <div id="status-counter" class="text-sm bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 text-slate-300">
+        Chargement du CSV...
+      </div>
     </div>
-    <p id="error" class="text-red-500 text-sm mt-2"></p>
-    <p id="loading" class="text-gray-500 text-sm mt-2">Chargement des stations...</p>
-    <p id="count" class="text-gray-500 text-sm mt-2"></p>
-    <p id="filterInfo" class="text-gray-500 text-sm mt-2"></p>
-  </div>
 
-  <div id="map"></div>
+    <!-- Zone Droite (Formulaire) -->
+    <form id="form-trilateration" class="flex items-center space-x-3" onsubmit="event.preventDefault(); addTrilaterationCircle();">
+      <div class="flex items-center bg-slate-800 rounded-lg px-2 py-1 border border-slate-700">
+        <label for="station-id" class="text-xs text-slate-400 mr-2">ID Station:</label>
+        <input type="text" id="station-id" required placeholder="Ex: 123456" 
+               class="bg-transparent text-sm text-white focus:outline-none w-28">
+      </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+      <div class="flex items-center bg-slate-800 rounded-lg px-2 py-1 border border-slate-700">
+        <label for="circle-radius" class="text-xs text-slate-400 mr-2">Rayon (m):</label>
+        <input type="number" id="circle-radius" required min="1" placeholder="Ex: 1000" 
+               class="bg-transparent text-sm text-white focus:outline-none w-24">
+      </div>
 
+      <button type="submit" 
+              class="bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold px-4 py-1.5 rounded-lg transition">
+        Valider
+      </button>
+
+      <!-- Bouton Pin -->
+      <button type="button" id="btn-pin" title="Ajouter une épingle" 
+              class="w-9 h-9 flex items-center justify-center rounded-lg bg-red-600 hover:bg-red-500 text-white transition">
+        <i class="fa-solid fa-thumbtack text-lg"></i>
+      </button>
+    </form>
+  </header>
+
+  <!-- Zone Carte -->
+  <main id="map" class="relative z-10"></main>
+
+  <!-- Script Application -->
   <script>
-    // Variables globales
+// --- VARIABLES GLOBALES ---
+    const TOUR_EIFFEL_COORDS = [48.8584, 2.2945];
+    const MAX_VISIBLE_STATIONS = 100000; // Seuil porté à 10 000
+    
     let map;
-    let allStations = [];
-    let filteredStations = [];
-    let circles = [];
-    let markerClusterGroup;
-    const circleLayers = [];
-    const pinLayers = [];
-    let updateTimeout = null;
-    let isPinModeActive = false;
+    let markersClusterGroup;
+    let allStations = []; 
+    let circlesLayerGroup; 
+    let pinsLayerGroup;    
+    let isPinMode = false;
 
-    // Coordonnées de la Tour Eiffel
-    const tourEiffel = [48.8584, 2.2945];
-    const defaultZoom = 14;
-    const maxRadiusKm = 10;
+    // Gestionnaire des formes dessinées (disques / épingles)
+    const activeShapes = {};
+    let shapeCounter = 0;
 
-    // Fonction pour activer/désactiver les clics sur les cercles
-    function setCirclesInteractive(interactive) {
-      circleLayers.forEach(circle => {
-        circle.options.interactive = interactive;
-        circle.setStyle(circle.options);
-        if (interactive) {
-          circle.on('click', (e) => {
-            circle.openPopup(e.latlng);
-          });
-        } else {
-          circle.off('click');
-        }
-      });
-    }
-
-    // Initialiser la carte
+    // --- INITIALISATION DE LA CARTE ---
     function initMap() {
-      map = L.map('map').setView(tourEiffel, defaultZoom);
+      map = L.map('map').setView(TOUR_EIFFEL_COORDS, 12);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors | SNT'
       }).addTo(map);
 
-      markerClusterGroup = L.markerClusterGroup({
-        maxClusterRadius: 50,
-        spiderfyOnMaxZoom: true,
+      // OPTIMISATION : Rayon ajusté à 90px et chargement par blocs
+      markersClusterGroup = L.markerClusterGroup({ 
+        maxClusterRadius: 90,     // Ajustement plus fin du regroupement
+        chunkedLoading: true,     // Rendu progressif pour éviter les ralentissements
+        disableClusteringAtZoom: 17 
       });
-      map.addLayer(markerClusterGroup);
+      
+      circlesLayerGroup = L.layerGroup().addTo(map);
+      pinsLayerGroup = L.layerGroup().addTo(map);
+      map.addLayer(markersClusterGroup);
 
-      // Écouter les clics sur la carte pour poser une épingle
-      map.on('click', (e) => {
-        if (isPinModeActive) {
-          addCustomPin(e.latlng.lat, e.latlng.lng);
+      map.on('moveend zoomend', updateVisibleStations);
+      map.on('click', handleMapClick);
+
+      document.getElementById('btn-pin').addEventListener('click', togglePinMode);
+
+      loadCSVData();
+    }
+
+    // --- CHARGEMENT ET PARSING DU CSV ---
+    function loadCSVData() {
+      Papa.parse("stations.csv", {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        delimiter: ";",
+        transformHeader: function(h) {
+          return h.trim().replace(/^["']|["']$/g, '');
+        },
+        complete: function(results) {
+          allStations = results.data.map(st => {
+            let rawLat = st.LAT ? parseFloat(st.LAT.toString().replace(',', '.')) : NaN;
+            let rawLon = st.LON ? parseFloat(st.LON.toString().replace(',', '.')) : NaN;
+
+            if (Math.abs(rawLat) > 180) rawLat = rawLat / 1000000;
+            if (Math.abs(rawLon) > 180) rawLon = rawLon / 1000000;
+
+            let lat = rawLat, lon = rawLon;
+            if (rawLat >= -5 && rawLat <= 10 && rawLon >= 41 && rawLon <= 51) {
+              lat = rawLon; lon = rawLat;
+            }
+
+            return { ...st, parsedLat: lat, parsedLon: lon };
+          }).filter(st => !isNaN(st.parsedLat) && !isNaN(st.parsedLon));
+
+          updateVisibleStations();
         }
       });
-
-      map.on('moveend', () => {
-        if (updateTimeout) clearTimeout(updateTimeout);
-        updateTimeout = setTimeout(filterStationsInView, 3000);
-      });
     }
 
-    // Ajouter une épingle personnalisée
-    function addCustomPin(lat, lng) {
-      const pinId = Date.now() + Math.random().toString(36).substring(2, 9);
+// --- AFFICHAGE PARESSEUX ET SOUS-ÉCHANTILLONNAGE ---
+    function updateVisibleStations() {
+      if (allStations.length === 0) return;
 
-      const customPinIcon = L.divIcon({
-        className: 'custom-pin',
-        iconSize: [24, 24],
-        html: '📌'
-      });
-
-      const pin = L.marker([lat, lng], { icon: customPinIcon }).addTo(map);
-      pin.myId = pinId;
-
-      const popupContent = document.createElement('div');
-      popupContent.innerHTML = `
-        <div>
-          <p><strong>Position:</strong> ${lat.toFixed(6)}, ${lng.toFixed(6)}</p>
-          <button class="delete-btn" onclick="deleteCustomPin('${pinId}')">🗑️ Supprimer</button>
-        </div>
-      `;
-      pin.bindPopup(popupContent);
-
-      pinLayers.push(pin);
-
-      // Réactiver le bouton épingle ET les clics sur les cercles
-      document.getElementById('pinButton').disabled = false;
-      isPinModeActive = false;
-      setCirclesInteractive(true);
-    }
-
-    // Supprimer une épingle personnalisée
-    function deleteCustomPin(pinId) {
-      const index = pinLayers.findIndex(layer => layer.myId === pinId);
-      if (index !== -1) {
-        map.removeLayer(pinLayers[index]);
-        pinLayers.splice(index, 1);
-      }
-    }
-
-    // Filtrer les stations dans la zone visible
-    function filterStationsInView() {
       const bounds = map.getBounds();
-      filteredStations = allStations.filter(station => {
-        return bounds.contains([station.LAT, station.LON]);
+      const visibleStations = allStations.filter(st => bounds.contains([st.parsedLat, st.parsedLon]));
+      const counterElem = document.getElementById('status-counter');
+
+      let stationsToRender = visibleStations;
+
+      if (visibleStations.length > MAX_VISIBLE_STATIONS) {
+        // Au lieu de tout masquer, on prend 1 antenne sur N pour garder une densité visuelle exacte
+        const step = Math.ceil(visibleStations.length / MAX_VISIBLE_STATIONS);
+        stationsToRender = visibleStations.filter((_, index) => index % step === 0);
+
+        counterElem.innerText = `${visibleStations.length.toLocaleString('fr-FR')} antennes dans la zone (affichage fluide de ${stationsToRender.length.toLocaleString('fr-FR')} points - Zoomez pour tout voir)`;
+        counterElem.className = "text-sm bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 text-amber-400 font-semibold";
+      } else {
+        counterElem.className = "text-sm bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 text-slate-300";
+        counterElem.innerText = `Nombre de stations affichées : ${visibleStations.length.toLocaleString('fr-FR')} / ${allStations.length.toLocaleString('fr-FR')}`;
+      }
+
+      markersClusterGroup.clearLayers();
+      const markers = stationsToRender.map(st => {
+        const marker = L.marker([st.parsedLat, st.parsedLon]);
+        marker.bindPopup(createStationPopupContent(st));
+        return marker;
       });
-
-      updateMarkers();
-      document.getElementById('filterInfo').textContent =
-        `Stations affichées: ${filteredStations.length} / ${allStations.length}`;
+      markersClusterGroup.addLayers(markers);
     }
 
-    // Mettre à jour les marqueurs
-    function updateMarkers() {
-      markerClusterGroup.clearLayers();
+    // --- CRÉATION DE DISQUE DE TRILATÉRATION ---
+    function addTrilaterationCircle() {
+      const stationId = document.getElementById('station-id').value.trim();
+      const radius = parseFloat(document.getElementById('circle-radius').value);
 
-      filteredStations.forEach(station => {
-        const marker = L.marker([station.LAT, station.LON]);
-        marker.bindPopup(`
-          <div>
-            <h3 style="font-weight: bold;">${station.STA_NM_ANFR}</h3>
-            <p>ID: ${station.SUP_ID}</p>
-            <p>Lat: ${station.LAT.toFixed(6)}, Lon: ${station.LON.toFixed(6)}</p>
-            <p>${station.ADR_LB_LIEU}</p>
-            <p>${station.ADR_LB_ADD1}</p>
-          </div>
-        `);
-        markerClusterGroup.addLayer(marker);
-      });
-    }
-
-    // Calculer la distance en km
-    function getDistanceInKm(lat1, lon1, lat2, lon2) {
-      const R = 6371;
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c;
-    }
-
-    // Charger les stations
-    async function loadStations() {
-      try {
-        const startTime = performance.now();
-        const baseUrl = window.location.origin + window.location.pathname;
-        const response = await fetch(`${baseUrl}stations.csv?t=${Date.now()}`);
-        if (!response.ok) throw new Error('Fichier stations.csv non trouvé.');
-
-        const csvText = await response.text();
-        const lines = csvText.split('\n').filter(line => line.trim() !== '');
-        if (lines.length < 2) throw new Error('Fichier CSV vide ou mal formaté.');
-
-        for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].split(';');
-          if (values.length < 13) continue;
-
-          const station = {
-            SUP_ID: values[0].trim(),
-            STA_NM_ANFR: values[1].trim(),
-            NAT_ID: values[2].trim(),
-            LAT: parseFloat(values[3].trim() || '0'),
-            LON: parseFloat(values[4].trim() || '0'),
-            SUP_NM_HAUT: values[5].trim(),
-            TPO_ID: values[6].trim(),
-            ADR_LB_LIEU: values[7].trim(),
-            ADR_LB_ADD1: values[8].trim(),
-            ADR_LB_ADD2: values[9].trim(),
-            ADR_LB_ADD3: values[10].trim(),
-            ADR_NM_CP: values[11].trim(),
-            COM_CD_INSEE: values[12].trim(),
-          };
-
-          if (isNaN(station.LAT) || isNaN(station.LON)) continue;
-          allStations.push(station);
-        }
-
-        filteredStations = allStations.filter(station => {
-          const distance = getDistanceInKm(tourEiffel[0], tourEiffel[1], station.LAT, station.LON);
-          return distance <= maxRadiusKm;
-        });
-
-        updateMarkers();
-
-        const endTime = performance.now();
-        document.getElementById('loading').textContent = '';
-        document.getElementById('count').textContent =
-          `Stations chargées: ${allStations.length} (${filteredStations.length} dans la zone initiale)`;
-        document.getElementById('filterInfo').textContent =
-          `Stations affichées: ${filteredStations.length} / ${allStations.length}`;
-      } catch (err) {
-        document.getElementById('error').textContent = `Erreur: ${err.message}`;
-        document.getElementById('loading').textContent = '';
-      }
-    }
-
-    // Supprimer un cercle par son ID
-    function deleteCircle(circleId) {
-      const index = circleLayers.findIndex(layer => layer.myIndex === circleId);
-      if (index !== -1) {
-        map.removeLayer(circleLayers[index]);
-        circleLayers.splice(index, 1);
-      }
-    }
-
-    // Ajouter un cercle
-    function addCircle() {
-      const stationInput = document.getElementById('stationInput').value.trim();
-      const distanceInput = document.getElementById('distanceInput').value.trim();
-
-      if (!stationInput || !distanceInput) {
-        document.getElementById('error').textContent = 'Veuillez renseigner un identifiant et une distance.';
-        return;
-      }
-
-      const radius = parseFloat(distanceInput);
-      if (isNaN(radius) || radius <= 0) {
-        document.getElementById('error').textContent = 'La distance doit être un nombre positif.';
-        return;
-      }
-
-      const station = allStations.find(s => s.SUP_ID === stationInput);
+      const station = allStations.find(s => s.ID === stationId);
       if (!station) {
-        document.getElementById('error').textContent = `Station ${stationInput} introuvable.`;
+        alert(`Station avec l'ID "${stationId}" introuvable.`);
         return;
       }
 
-      const circleId = Date.now() + Math.random().toString(36).substring(2, 9);
+      const center = [station.parsedLat, station.parsedLon];
+      const shapeId = 'shape_' + (shapeCounter++);
 
-      const circle = L.circle([station.LAT, station.LON], {
+      const circle = L.circle(center, {
+        color: '#0284c7',
+        fillColor: '#38bdf8',
+        fillOpacity: 0.25,
         radius: radius,
-        color: 'blue',
-        fillColor: 'blue',
-        fillOpacity: 0.2,
-      }).addTo(map);
+        interactive: !isPinMode 
+      });
 
-      circle.myIndex = circleId;
+      activeShapes[shapeId] = { layer: circle, group: circlesLayerGroup };
 
-      const popupContent = document.createElement('div');
-      popupContent.innerHTML = `
-        <div>
-          <p><strong>Station:</strong> ${stationInput}</p>
-          <p><strong>Rayon:</strong> ${radius} mètres</p>
-          <button class="delete-btn" onclick="deleteCircle('${circleId}')">🗑️ Supprimer</button>
+      circle.on('click', (e) => {
+        if (isPinMode) return;
+        
+        const popupContent = `
+          ${createStationPopupContent(station)}
+          <div class="mt-3 text-right border-t pt-2">
+            <button onclick="removeShape('${shapeId}')" class="bg-red-600 hover:bg-red-500 text-white text-xs px-3 py-1.5 rounded transition shadow-sm">
+              <i class="fa-solid fa-trash mr-1"></i> Supprimer la zone
+            </button>
+          </div>
+        `;
+        L.popup().setLatLng(e.latlng).setContent(popupContent).openOn(map);
+      });
+
+      circlesLayerGroup.addLayer(circle);
+      map.flyTo(center, 14);
+    }
+
+    // --- CONTENU POPUP STATION ---
+    function createStationPopupContent(st) {
+      return `
+        <div class="text-sm font-sans p-1 min-w-[200px]">
+          <h3 class="font-bold text-sky-700 text-base mb-2 border-b pb-1">Antenne Télécom</h3>
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between gap-4">
+              <span><b>ID:</b> ${st.ID || ''}</span>
+              <button onclick="copyToClipboard('${st.ID || ''}')" class="text-xs bg-gray-200 hover:bg-gray-300 px-2 py-0.5 rounded">Copier</button>
+            </div>
+            <div class="flex items-center justify-between gap-4">
+              <span><b>GPS:</b> ${st.parsedLat}, ${st.parsedLon}</span>
+              <button onclick="copyToClipboard('${st.parsedLat}, ${st.parsedLon}')" class="text-xs bg-gray-200 hover:bg-gray-300 px-2 py-0.5 rounded">Copier</button>
+            </div>
+            <div><b>Opérateur:</b> <span class="font-medium text-slate-800">${st.OPR || 'N/C'}</span></div>
+            <div><b>Technologie:</b> <span class="inline-block bg-sky-100 text-sky-800 text-xs px-2 py-0.5 rounded font-bold">${st.SYST || 'N/C'}</span></div>
+            <div class="text-xs text-gray-600 mt-1"><b>Adresse:</b> ${st.ADR || 'Non renseignée'}</div>
+          </div>
         </div>
       `;
-      circle.bindPopup(popupContent);
+    }
 
-      circleLayers.push(circle);
+    // --- GESTION DU MODE PIN (ÉPINGLE) ---
+    function togglePinMode() {
+      isPinMode = !isPinMode;
+      const btn = document.getElementById('btn-pin');
 
-      // Réactiver les clics sur ce nouveau cercle
-      circle.on('click', (e) => {
-        circle.openPopup(e.latlng);
+      if (isPinMode) {
+        btn.classList.replace('bg-red-600', 'bg-gray-500');
+        btn.classList.replace('hover:bg-red-500', 'hover:bg-gray-400');
+        document.body.classList.add('pin-mode');
+        circlesLayerGroup.eachLayer(layer => layer.getElement() && (layer.getElement().style.pointerEvents = 'none'));
+      } else {
+        btn.classList.replace('bg-gray-500', 'bg-red-600');
+        btn.classList.replace('hover:bg-gray-400', 'hover:bg-red-500');
+        document.body.classList.remove('pin-mode');
+        circlesLayerGroup.eachLayer(layer => layer.getElement() && (layer.getElement().style.pointerEvents = 'auto'));
+      }
+    }
+
+    // Clic pour ajouter une épingle
+    function handleMapClick(e) {
+      if (!isPinMode) return;
+
+      const lat = e.latlng.lat.toFixed(6);
+      const lon = e.latlng.lng.toFixed(6);
+      const shapeId = 'shape_' + (shapeCounter++);
+
+      const pinIcon = L.divIcon({
+        html: '<i class="fa-solid fa-location-dot text-red-600 text-3xl -translate-x-1/2 -translate-y-full drop-shadow"></i>',
+        className: 'custom-pin-icon',
+        iconSize: [0, 0]
       });
 
-      map.setView([station.LAT, station.LON], defaultZoom);
-      document.getElementById('stationInput').value = '';
-      document.getElementById('distanceInput').value = '';
-      document.getElementById('error').textContent = '';
+      const pinMarker = L.marker([lat, lon], { icon: pinIcon });
+      
+      activeShapes[shapeId] = { layer: pinMarker, group: pinsLayerGroup };
+
+      const popupContent = `
+        <div class="text-sm font-sans p-1">
+          <h4 class="font-bold text-red-600 mb-1">Épingle repère</h4>
+          <div class="flex items-center justify-between gap-4 mb-2">
+            <span><b>LAT, LON:</b> ${lat}, ${lon}</span>
+            <button onclick="copyToClipboard('${lat}, ${lon}')" class="text-xs bg-gray-200 hover:bg-gray-300 px-2 py-0.5 rounded">Copier</button>
+          </div>
+          <div class="mt-2 text-right border-t pt-2">
+            <button onclick="removeShape('${shapeId}')" class="bg-red-600 hover:bg-red-500 text-white text-xs px-3 py-1.5 rounded transition shadow-sm">
+              <i class="fa-solid fa-trash mr-1"></i> Supprimer l'épingle
+            </button>
+          </div>
+        </div>
+      `;
+      pinMarker.bindPopup(popupContent);
+      pinsLayerGroup.addLayer(pinMarker);
+
+      togglePinMode();
     }
 
-    // Activer/désactiver le mode épingle
-    function togglePinMode() {
-      isPinModeActive = !isPinModeActive;
-      const pinButton = document.getElementById('pinButton');
-      pinButton.disabled = isPinModeActive;
-
-      // Désactiver les clics sur les cercles si on active le mode épingle
-      setCirclesInteractive(!isPinModeActive);
+    // --- SUPPRESSION D'UNE FORME ---
+    function removeShape(shapeId) {
+      const shapeData = activeShapes[shapeId];
+      if (shapeData) {
+        shapeData.group.removeLayer(shapeData.layer);
+        delete activeShapes[shapeId];
+      }
+      map.closePopup();
     }
 
-    // Écouteurs
-    document.getElementById('addButton').addEventListener('click', addCircle);
-    document.getElementById('form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      addCircle();
-    });
-    document.getElementById('pinButton').addEventListener('click', togglePinMode);
+    // --- COPIER DANS LE PRESSE-PAPIER ---
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.createElement('div');
+        toast.className = 'fixed bottom-4 right-4 bg-slate-900 text-white px-3 py-2 rounded-lg text-xs shadow-lg z-50';
+        toast.innerText = `Copié : ${text}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+      });
+    }
 
-    // Initialisation
-    initMap();
-    loadStations();
+    // Lancement au chargement de la page
+    window.onload = initMap;
   </script>
 </body>
 </html>
