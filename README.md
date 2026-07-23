@@ -12,10 +12,10 @@ L'objectif est de visualiser comment la **localisation par distance** (mesure de
 ### ✅ **Création et gestion des périmètres de détection**
 - **Ajouter un cercle** :
   - Saisis l'**identifiant d'une station** (ex: `1525818`) et un **rayon en mètres** dans le formulaire en haut à droite.
-  - Clique sur **"Ajouter"** ou **"Valider"** pour dessiner un cercle bleu autour de la station.
+  - Clique sur **"Tracer disque"** pour dessiner un cercle bleu autour de la station.
 - **Supprimer un cercle** :
-  - Clique sur un cercle bleu pour ouvrir son popup.
-  - Clique sur **"🗑️ Supprimer"** pour le retirer de la carte.
+  - Clique sur un disque bleu pour ouvrir son popup.
+  - Clique sur **"🗑️ Supprimer la zone"** pour le retirer de la carte.
 
 ### ✅ **Création et gestion des emplacements personnalisés**
 - **Poser une épingle** :
@@ -23,7 +23,7 @@ L'objectif est de visualiser comment la **localisation par distance** (mesure de
   - Clique **n'importe où sur la carte** pour poser une épingle rouge.
 - **Supprimer une épingle** :
   - Clique sur l'épingle pour ouvrir son popup.
-  - Clique sur **"🗑️ Supprimer"** pour la retirer.
+  - Clique sur **"🗑️ Supprimer l'épingle"** pour la retirer.
 
 ---
 ## 🛠 **Technologies utilisées**
