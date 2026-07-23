@@ -93,6 +93,7 @@
 
     // --- INITIALISATION DE LA CARTE ---
     function initMap() {
+
       map = L.map('map').setView(TOUR_EIFFEL_COORDS, 12);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -100,11 +101,13 @@
         attribution: '© OpenStreetMap contributors | SNT'
       }).addTo(map);
 
-      // OPTIMISATION : Rayon ajusté à 90px et chargement par blocs
+      // OPTIMISATION & GESTION DES SUPERPOSITIONS
       markersClusterGroup = L.markerClusterGroup({ 
-        maxClusterRadius: 90,     // Ajustement plus fin du regroupement
-        chunkedLoading: true,     // Rendu progressif pour éviter les ralentissements
-        disableClusteringAtZoom: 17 
+        maxClusterRadius: 90,        // Rayon de regroupement
+        chunkedLoading: true,        // Chargement fluide par blocs
+        spiderfyOnMaxZoom: true,     // Déploie les antennes identiques en "araignée" au zoom max
+        showCoverageOnHover: false,  // (Optionnel) Désactive le polygone bleu au survol
+        zoomToBoundsOnClick: true    // Zoome automatiquement au clic sur un groupe
       });
       
       circlesLayerGroup = L.layerGroup().addTo(map);
@@ -167,7 +170,7 @@
         console.error("Erreur lors du chargement des fichiers CSV :", error);
       }
     }
-    
+
 // --- AFFICHAGE PARESSEUX ET SOUS-ÉCHANTILLONNAGE ---
     function updateVisibleStations() {
       if (allStations.length === 0) return;
