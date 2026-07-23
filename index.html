@@ -119,37 +119,55 @@
       loadCSVData();
     }
 
-    // --- CHARGEMENT ET PARSING DU CSV ---
-    function loadCSVData() {
-      Papa.parse("stations.csv", {
-        download: true,
-        header: true,
-        skipEmptyLines: true,
-        delimiter: ";",
-        transformHeader: function(h) {
-          return h.trim().replace(/^["']|["']$/g, '');
-        },
-        complete: function(results) {
-          allStations = results.data.map(st => {
-            let rawLat = st.LAT ? parseFloat(st.LAT.toString().replace(',', '.')) : NaN;
-            let rawLon = st.LON ? parseFloat(st.LON.toString().replace(',', '.')) : NaN;
+   // --- CHARGEMENT MULTI-FICHIERS EN PARALLÈLE ---
+    async function loadCSVData() {
+      const files = ['stations_1.csv', 'stations_2.csv', 'stations_3.csv'];
+      
+      try {
+        const fetchPromises = files.map(file => 
+          fetch(file)
+            .then(response => response.text())
+            .then(csvText => {
+              return new Promise(resolve => {
+                Papa.parse(csvText, {
+                  header: true,
+                  skipEmptyLines: true,
+                  delimiter: ";",
+                  transformHeader: h => h.trim().replace(/^["']|["']$/g, ''),
+                  complete: results => resolve(results.data)
+                });
+              });
+            })
+        );
 
-            if (Math.abs(rawLat) > 180) rawLat = rawLat / 1000000;
-            if (Math.abs(rawLon) > 180) rawLon = rawLon / 1000000;
+        // Attente du chargement de tous les fichiers
+        const resultsArray = await Promise.all(fetchPromises);
+        
+        // Fusion des 3 tableaux en un seul
+        const rawStations = resultsArray.flat();
 
-            let lat = rawLat, lon = rawLon;
-            if (rawLat >= -5 && rawLat <= 10 && rawLon >= 41 && rawLon <= 51) {
-              lat = rawLon; lon = rawLat;
-            }
+        allStations = rawStations.map(st => {
+          let rawLat = st.LAT ? parseFloat(st.LAT.toString().replace(',', '.')) : NaN;
+          let rawLon = st.LON ? parseFloat(st.LON.toString().replace(',', '.')) : NaN;
 
-            return { ...st, parsedLat: lat, parsedLon: lon };
-          }).filter(st => !isNaN(st.parsedLat) && !isNaN(st.parsedLon));
+          if (Math.abs(rawLat) > 180) rawLat = rawLat / 1000000;
+          if (Math.abs(rawLon) > 180) rawLon = rawLon / 1000000;
 
-          updateVisibleStations();
-        }
-      });
+          let lat = rawLat, lon = rawLon;
+          if (rawLat >= -5 && rawLat <= 10 && rawLon >= 41 && rawLon <= 51) {
+            lat = rawLon; lon = rawLat;
+          }
+
+          return { ...st, parsedLat: lat, parsedLon: lon };
+        }).filter(st => !isNaN(st.parsedLat) && !isNaN(st.parsedLon));
+
+        updateVisibleStations();
+
+      } catch (error) {
+        console.error("Erreur lors du chargement des fichiers CSV :", error);
+      }
     }
-
+    
 // --- AFFICHAGE PARESSEUX ET SOUS-ÉCHANTILLONNAGE ---
     function updateVisibleStations() {
       if (allStations.length === 0) return;
