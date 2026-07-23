@@ -54,7 +54,7 @@ L'objectif est de visualiser comment la **localisation par distance** (mesure de
   - [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster) : Regroupement des marqueurs
 
 - **Hébergement** :
-  - GitHub Pages (pour le déploiement gratuit)
+  - GitHub Pages
 
 ---
 ## 🚀 **Comment l'utiliser ?**
@@ -75,7 +75,7 @@ L'objectif est de visualiser comment la **localisation par distance** (mesure de
   - Superpose plusieurs cercles pour localiser un point par intersection.
   - Expérimente avec des rayons différents pour comprendre l'impact des erreurs de mesure.
 - **Cas d'usage** :
-  - Localisation d'un émetteur radio.
+  - Localisation d'un appareil connaissant la distance à trois antennes (et les positions de ces antennes)
   - Principe utilisé par le GPS (avec au moins 3 satellites).
 
 ---
