@@ -57,7 +57,7 @@ L'objectif est de visualiser comment la **localisation par distance** (mesure de
 ---
 ## 🚀 **Comment l'utiliser ?**
 1. **Ouvrir le site** :
-   - Accède à l'URL du projet [(ex: `https://ebuonocore.github.io/trilateration/`).](https://ebuonocore.github.io/trilateration/)
+   - Accède à l'URL du projet [`https://ebuonocore.github.io/trilateration/`](https://ebuonocore.github.io/trilateration/)
 2. **Explorer les stations** :
    - Zoome/dézoome pour voir les stations dans la zone affichée.
    - Clique sur un marqueur pour voir ses détails.
