@@ -4,6 +4,8 @@ Ce projet est une **illustration interactive** du principe de **trilatération**
 
 L'objectif est de visualiser comment la **localisation par distance** (mesure des rayons autour de points connus) permet de déterminer une position sur une carte.
 
+
+![](/assets/illustration_01.png)
 ---
 
 ## 🌍 **Fonctionnalités**
