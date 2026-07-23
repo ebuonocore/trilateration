@@ -3,7 +3,7 @@
 Ce projet est une **illustration interactive** du principe de **trilatération**, abordé dans le **chapitre "Localisation et cartographie"** du programme de **Sciences Numériques et Technologie (SNT)** en classe de Seconde.
 
 L'objectif est de visualiser comment la **localisation par distance** (mesure des rayons autour de points connus) permet de déterminer une position sur une carte.
-
+```markdown
 ```mermaid
 graph TD
     A["Station_1(Lat_48.8584_Lon_2.2945)"] --> 10km| B(Cercle_1)
