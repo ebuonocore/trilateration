@@ -4,7 +4,13 @@ Ce projet est une **illustration interactive** du principe de **trilatération**
 
 L'objectif est de visualiser comment la **localisation par distance** (mesure des rayons autour de points connus) permet de déterminer une position sur une carte.
 
-![Diagramme de trilatération](https://mermaid.ink/svg/pako:eNptkMFuwjAQhveKzLxQ0Q7q7q67a21Qd3UoXy0Jq61u27YLv7v73HxD0YkxL6852zk8z3Z8z3Z8z3Z8z3Z8z3Z8z3Z8z3Z8z3Z8z3Z8?theme=default)
+```mermaid
+graph TD
+    A[Station 1] --> B(Cercle 1)
+    C[Station 2] --> D(Cercle 2)
+    E[Station 3] --> F(Cercle 3)
+    B & D & F --> G[Position estimée]
+```
 
 ---
 ## 🌍 **Fonctionnalités**
