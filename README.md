@@ -84,3 +84,36 @@ Données : Les données des stations proviennent de l'ANFR (Agence Nationale des
 
 ---
 *Projet réalisé dans le cadre du programme de **SNT (Sciences Numériques et Technologie)**.*
+
+```mermaid
+flowchart TD
+    subgraph "Données"
+        A[Fichier CSV<br>stations.csv] -->|Contient| B[Liste des stations<br>+ Coordonnées GPS]
+    end
+
+    subgraph "Interface Utilisateur"
+        C[Formulaire] -->|ID Station + Rayon| D[Créer un cercle]
+        E[Bouton 📌] -->|Mode épingle| F[Poser une épingle]
+        G[Carte OpenStreetMap] -->|Affichage| H[Stations + Cercles + Épingles]
+    end
+
+    subgraph "Fonctionnalités"
+        D -->|Ajoute| I[Cercle bleu<br>Rayon personnalisable]
+        F -->|Ajoute| J[Épingle rouge<br>Position GPS]
+        I -->|Suppression| K[🗑️ Bouton dans le popup]
+        J -->|Suppression| L[🗑️ Bouton dans le popup]
+    end
+
+    B -->|Chargement| G
+    H -->|Visualisation| M[Trilatération:<br>Intersection des cercles]
+
+    style A fill:#f96,stroke:#333
+    style B fill:#f96,stroke:#333
+    style C fill:#9f9,stroke:#333
+    style D fill:#9f9,stroke:#333
+    style E fill:#9f9,stroke:#333
+    style F fill:#9f9,stroke:#333
+    style G fill:#9cf,stroke:#333
+    style H fill:#9cf,stroke:#333
+    style M fill:#bbf,stroke:#333,stroke-width:2px
+```
