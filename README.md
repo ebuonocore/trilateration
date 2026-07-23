@@ -67,7 +67,8 @@ L'objectif est de visualiser comment la **localisation par distance** (mesure de
     - Informations complémentaires (adresse, type d'installation, etc.).
 
 ---
-### 📜 ** Licence**
+## 📜 ** Licence**  
+
 -Ce projet est open source et peut être librement utilisé à des fins pédagogiques.
 - Code : Licence MIT (utilisation libre, modification autorisée).
 Données : Les données des stations proviennent de l'ANFR (Agence Nationale des Fréquences) et sont publiquement accessibles.
