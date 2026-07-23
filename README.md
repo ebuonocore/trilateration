@@ -38,7 +38,7 @@ L'objectif est de visualiser comment la **localisation par distance** (mesure de
 - **Jeu de données** : *"Données sur les installations radioélectriques de plus de 5 watts"*
   - **Source** : Agence Nationale des Fréquences (ANFR)
   - **Date de mise à jour** : 3 juillet 2026
-  - **Format** : Fichier CSV contenu dans `/assets/stations.csv`
+  - **Format** : Fichier CSV `stations.csv`
   - **Contenu** :
     - Coordonnées GPS (latitude/longitude en degrés décimaux).
     - Identifiants des stations (SUP_ID, STA_NM_ANFR).
