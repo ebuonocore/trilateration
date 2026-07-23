@@ -4,18 +4,12 @@ Ce projet est une **illustration interactive** du principe de **trilatération**
 
 L'objectif est de visualiser comment la **localisation par distance** (mesure des rayons autour de points connus) permet de déterminer une position sur une carte.
 
-``````mermaid
+```mermaid
 graph TD
-    A["Station 1 (Lat 48.8584, Lon 2.2945)"] --> Rayon_10_km| B(Cercle 1)
-    C["Station 2 (Lat 48.8601, Lon 2.3012)"] -->|Rayon_8_km| D(Cercle 2)
-    E["Station 3 (Lat 48.8550, Lon 2.2890)"] -->|Rayon_12_km| F(Cercle 3)
-
-    B & D & F --> G["Zone d'intersection\nPosition estimée"]
-
-    style A fill:#f9f,stroke:#333
-    style C fill:#f9f,stroke:#333
-    style E fill:#f9f,stroke:#333
-    style G fill:#bbf,stroke:#333,stroke-width:2px
+    A["Station_1(Lat_48.8584_Lon_2.2945)"] --> 10km| B(Cercle_1)
+    C["Station_2(Lat_48.8601_Lon_2.3012)"] -->|8km| D(Cercle_2)
+    E["Station_3(Lat_48.8550_Lon_2.2890)"] -->|12km| F(Cercle_3)
+    B & D & F --> G["Zone_d_intersection"]
 ```
 ---
 ## 🌍 **Fonctionnalités**
