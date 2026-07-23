@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartographie des Antennes Télécom - SNT</title>
+
+  <!-- Leaflet CSS & MarkerCluster CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+
+  <!-- Font Awesome & Tailwind CSS via CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* Curseur spécifique en mode création d'épingle */
+    body.pin-mode #map {
+      cursor: crosshair !important;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 flex flex-col h-screen overflow-hidden font-sans">
+
+  <!-- BARRE SUPÉRIEURE DE Saisie & CONTRÔLE -->
+  <header class="bg-slate-800 border-b border-slate-700 p-3 shadow-md z-10 flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <i class="fa-solid fa-tower-cell text-sky-400 text-2xl"></i>
+      <h1 class="text-lg font-bold tracking-wide text-white">SNT - Trilatération</h1>
+    </div>
+
+    <!-- Formulaire Trilatération -->
+    <div class="flex items-center gap-2 bg-slate-900/60 p-1.5 rounded-lg border border-slate-700">
+      <input type="text" id="station-id" placeholder="ID Station (ex: 2159282)" 
+             class="bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-sky-500 w-44">
+      <input type="number" id="circle-radius" placeholder="Rayon (mètres)" value="1000" 
+             class="bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-sky-500 w-32">
+      <button id="btn-add-circle" class="bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold px-3 py-1.5 rounded transition flex items-center gap-1.5 shadow">
+        <i class="fa-solid fa-circle-dot"></i> Tracer disque
+      </button>
+    </div>
+
+    <!-- Outils additionnels -->
+    <div class="flex items-center gap-3">
+      <button id="btn-pin" class="bg-red-600 hover:bg-red-500 text-white text-sm font-semibold px-3 py-1.5 rounded transition flex items-center gap-1.5 shadow">
+        <i class="fa-solid fa-location-dot"></i> Déposer Épingle
+      </button>
+
+      <!-- Compteur d'antennes -->
+      <div id="status-counter" class="text-sm bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 text-slate-300">
+        Chargement des données...
+      </div>
+    </div>
+  </header>
+
+  <!-- CARTE LEAFLET -->
+  <main class="flex-1 relative">
+    <div id="map" class="w-full h-full"></div>
+  </main>
+
+  <!-- DEPENDANCES EXTERNES (Leaflet & PapaParse) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <!-- POINT D'ENTRÉE JAVASCRIPT MODULAIRE -->
+  <script type="module" src="js/app.js"></script>
+
+</body>
+</html>
