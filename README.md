@@ -42,7 +42,6 @@ L'objectif est de visualiser comment la **localisation par distance** (mesure de
    - Accède à l'URL du projet [`https://ebuonocore.github.io/trilateration/`](https://ebuonocore.github.io/trilateration/)
 2. **Explorer les stations** :
    - Zoome/dézoome pour voir les stations dans la zone affichée.
-   - Rafraîchissement des antennes toutes les trois secondes (🔥Evite d'afficher plus de 3000 antennes en dézoomant🔥)
    - Clique sur un marqueur pour voir ses détails.
 3. **Créer des cercles** :
    - Utilise le formulaire pour ajouter des périmètres de détection.
