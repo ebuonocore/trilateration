@@ -10,7 +10,7 @@ L'objectif est de visualiser comment la **localisation par distance** (mesure de
 
 ### ✅ **Création et gestion des périmètres de détection**
 - **Ajouter un cercle** :
-  - Saisis l'**identifiant d'une station** (ex: `SUP123`) et un **rayon en mètres** dans le formulaire en haut à droite.
+  - Saisis l'**identifiant d'une station** (ex: `1525818`) et un **rayon en mètres** dans le formulaire en haut à droite.
   - Clique sur **"Ajouter"** ou **"Valider"** pour dessiner un cercle bleu autour de la station.
 - **Supprimer un cercle** :
   - Clique sur un cercle bleu pour ouvrir son popup.
