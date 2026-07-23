@@ -47,6 +47,7 @@ L'objectif est de visualiser comment la **localisation par distance** (mesure de
    - Utilise le formulaire pour ajouter des périmètres de détection.
 4. **Ajouter des épingles** :
    - Active le mode épingle (📌) et clique sur la carte.
+*Remarque : Pour une question de fluidité et de lisibilité plusieurs antennes de technologies différentes (2G, 3G, 4G...) qui ont les mêmes attributs (localisation, opérateur...) sont assimilés à une même antenne!*
 
 ---
 ## 📚 **Sources des données**
