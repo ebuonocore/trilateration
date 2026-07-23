@@ -10,7 +10,7 @@ graph TD
     C["Station_2(Lat_48.8601_Lon_2.3012)"] -->|8km| D(Cercle_2)
     E["Station_3(Lat_48.8550_Lon_2.2890)"] -->|12km| F(Cercle_3)
     B & D & F --> G["Zone_d_intersection"]
-```
+
 ---
 ## 🌍 **Fonctionnalités**
 
