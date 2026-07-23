@@ -257,7 +257,8 @@
     async function loadStations() {
       try {
         const startTime = performance.now();
-        const response = await fetch('assets/stations.csv?t=' + Date.now());
+        const baseUrl = window.location.origin + window.location.pathname;
+        const response = await fetch(`${baseUrl}assets/stations.csv?t=${Date.now()}`);
         if (!response.ok) throw new Error('Fichier stations.csv non trouvé.');
 
         const csvText = await response.text();
