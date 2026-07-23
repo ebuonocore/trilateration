@@ -7,7 +7,6 @@ L'objectif est de visualiser comment la **localisation par distance** (mesure de
 
 ![](/assets/illustration_01.png)
 ---
-
 ## 🌍 **Fonctionnalités**
 
 ### ✅ **Création et gestion des périmètres de détection**
@@ -27,25 +26,6 @@ L'objectif est de visualiser comment la **localisation par distance** (mesure de
   - Clique sur **"🗑️ Supprimer"** pour la retirer.
 
 ---
-
-## 📚 **Sources des données**
-
-### 🗺️ **Carte**
-- **OpenStreetMap** : [https://www.openstreetmap.org/](https://www.openstreetmap.org/)
-  - Tuiles utilisées via Leaflet pour l'affichage cartographique.
-
-### 📊 **Données des stations**
-- **Jeu de données** : *"Données sur les installations radioélectriques de plus de 5 watts"*
-  - **Source** : Agence Nationale des Fréquences (ANFR)
-  - **Date de mise à jour** : 3 juillet 2026
-  - **Format** : Fichier CSV `stations.csv`
-  - **Contenu** :
-    - Coordonnées GPS (latitude/longitude en degrés décimaux).
-    - Identifiants des stations (SUP_ID, STA_NM_ANFR).
-    - Informations complémentaires (adresse, type d'installation, etc.).
-
----
-
 ## 🛠 **Technologies utilisées**
 - **Frontend** :
   - HTML5 / CSS3 (avec Tailwind CSS pour le style)
@@ -68,6 +48,29 @@ L'objectif est de visualiser comment la **localisation par distance** (mesure de
    - Utilise le formulaire pour ajouter des périmètres de détection.
 4. **Ajouter des épingles** :
    - Active le mode épingle (📌) et clique sur la carte.
+
+---
+## 📚 **Sources des données**
+
+### 🗺️ **Carte**
+- **OpenStreetMap** : [https://www.openstreetmap.org/](https://www.openstreetmap.org/)
+  - Tuiles utilisées via Leaflet pour l'affichage cartographique.
+
+### 📊 **Données des stations**
+- **Jeu de données** : *"Données sur les installations radioélectriques de plus de 5 watts"*
+  - **Source** : Agence Nationale des Fréquences (ANFR)
+  - **Date de mise à jour** : 3 juillet 2026
+  - **Format** : Fichier CSV `stations.csv`
+  - **Contenu** :
+    - Coordonnées GPS (latitude/longitude en degrés décimaux).
+    - Identifiants des stations (SUP_ID, STA_NM_ANFR).
+    - Informations complémentaires (adresse, type d'installation, etc.).
+
+---
+### 📜** Licence**
+-Ce projet est open source et peut être librement utilisé à des fins pédagogiques.
+- Code : Licence MIT (utilisation libre, modification autorisée).
+Données : Les données des stations proviennent de l'ANFR (Agence Nationale des Fréquences) et sont publiquement accessibles.
 
 ---
 ## 📝 **Remarques pédagogiques**
